@@ -12,7 +12,7 @@ import { AnswersModule } from './modules/answers/answers.module';
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
-      type: process.env.DB_DRIVER as 'mysql' | 'postgres' | 'sqlite',
+      type: process.env.DB_DRIVER as any,
       host: process.env.DB_HOST,
       port: Number(process.env.DB_PORT),
       username: process.env.DB_USER,
