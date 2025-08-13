@@ -6,6 +6,7 @@ import {
   Column,
   Unique,
   CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Answer } from './answer.entity';
 import { User } from './user.entity';
@@ -22,6 +23,18 @@ export class AnswerLike {
   @ManyToOne(() => User, { eager: true })
   user: User;
 
-  @CreateDateColumn()
+  @CreateDateColumn({
+    type: 'timestamp',
+    precision: 0, // bỏ microseconds
+    default: () => 'CURRENT_TIMESTAMP',
+  })
   created_at: Date;
+
+  @UpdateDateColumn({
+    type: 'timestamp',
+    precision: 0,
+    default: () => 'CURRENT_TIMESTAMP',
+    onUpdate: 'CURRENT_TIMESTAMP',
+  })
+  updated_at: Date;
 }
