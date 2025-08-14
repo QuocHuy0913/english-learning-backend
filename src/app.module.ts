@@ -21,6 +21,7 @@ import { AiModule } from './modules/ai/ai.module';
       database: process.env.DB_NAME,
       autoLoadEntities: true,
       synchronize: true,
+      ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false
     }),
     UsersModule,
     AuthModule,

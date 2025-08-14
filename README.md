@@ -12,6 +12,10 @@ Sử dụng **NestJS + TypeORM + MySQL** với xác thực **JWT**.
 - [MySQL](https://www.mysql.com/) — Database (XAMPP hoặc Cloud)
 - [Passport.js](http://www.passportjs.org/) — Chiến lược JWT
 
+## 🤖 AI Suggestion
+
+Backend tích hợp OpenAI qua Hugging Face để gợi ý nội dung câu hỏi khi người dùng tạo câu hỏi mới trên diễn đàn.
+
 ---
 
 ## 📂 Cấu trúc thư mục
@@ -49,12 +53,17 @@ src/
 │   │   ├── questions.module.ts
 │   │   └── questions.service.ts
 │   │
-│   └── users/                # API người dùng
-│       ├── dto/
-│       │   └── create-user.dto.ts
-│       ├── users.controller.ts
-│       ├── users.module.ts
-│       └── users.service.ts
+│   ├── users/                # API người dùng
+│   │   ├── dto/
+│   │   │   └── create-user.dto.ts
+│   │   ├── users.controller.ts
+│   │   ├── users.module.ts
+│   │   └── users.service.ts
+│   │
+│   └── ai/
+        ├── ai.controller.ts      # Controller xử lý endpoint /questions/ai-suggest
+        ├── ai.module.ts         
+        └── ai.service.ts         # Service gọi Hugging Face API
 │
 ├── passports/
 │   └── jwt.strategy.ts        # Cấu hình chiến lược JWT
@@ -75,6 +84,9 @@ cd english-learning-backend
 npm install
 
 3️⃣ Tạo file .env
+
+## Nếu chạy Localhost trên XAMPP
+
 DB_DRIVER=mysql
 DB_HOST=localhost
 DB_PORT=3306
@@ -82,9 +94,28 @@ DB_USER=root
 DB_PASSWORD=
 DB_NAME=english_learning
 
+## Nếu chạy local public trên neon.tech
+
+DB_DRIVER=postgres
+DB_HOST=<YOUR_NEON_HOST>          # ví dụ: ep-xxxxxx-pooler.ap-southeast-1.aws.neon.tech
+DB_PORT=5432
+DB_USER=<YOUR_NEON_USER>          # ví dụ: neondb_owner
+DB_PASSWORD=<YOUR_NEON_PASSWORD>  # mật khẩu database
+DB_NAME=<YOUR_NEON_DB_NAME>       # ví dụ: neondb
+DB_SSL=true
+
+Lưu ý:
+- DB_PORT của Neon mặc định là 5432
+- Nếu Neon yêu cầu SSL, thêm:
+    + ssl: { rejectUnauthorized: false } vào cấu hình TypeOrmModule.forRoot()
+- Bạn có thể bật/tắt SSL tùy môi trường bằng biến DB_SSL.
+
+Bổ sung về các biến cho Authentication
 JWT_SECRET=
 JWT_ACCESS_EXPIRES=15m
 JWT_REFRESH_EXPIRES=7d
+
+AI_API_KEY=your_huggingface_api_key
 
 💡 Tạo JWT_SECRET ngẫu nhiên:
 Bạn có thể dùng Node.js:
