@@ -7,7 +7,7 @@ export class AiService {
   private readonly model = 'openai/gpt-oss-120b:fireworks-ai';
 
   async getSuggestion(topic: string) {
-    const prompt = `Tôi muốn tạo một câu hỏi bằng tiếng Việt hoặc tiếng Anh trên diễn đàn học tập về chủ đề: "${topic}".
+    const prompt = `Tôi muốn tạo một câu hỏi bằng tiếng Việt hoặc tiếng Anh trên diễn đàn trao đổi học tập tiếng anh về chủ đề: "${topic}".
 Hãy trả về kết quả JSON với 3 trường:
 {
   "title": "Tiêu đề câu hỏi",
