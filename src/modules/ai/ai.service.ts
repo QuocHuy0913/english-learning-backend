@@ -35,7 +35,7 @@ export class AiService {
 Hãy trả về kết quả JSON với 3 trường:
 {
   "title": "Tiêu đề câu hỏi",
-  "content": "Nội dung chi tiết",
+  "content": "Nội dung chi tiết nhưng ngắn gọn và đầy đủ",
   "tags": "tag1, tag2, tag3"
 }`;
 
