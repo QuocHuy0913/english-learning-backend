@@ -35,7 +35,10 @@ export class AnswersService {
 
   async findByQuestion(questionId: number, userId: number) {
     const answers = await this.answerRepository.find({
-      where: { question: { id: questionId }, parent: require('typeorm').IsNull() }, // chỉ lấy answer cha
+      where: {
+        question: { id: questionId },
+        parent: require('typeorm').IsNull(),
+      }, // chỉ lấy answer cha
       relations: ['user', 'likes', 'replies', 'replies.user', 'replies.likes'],
       order: { created_at: 'ASC' },
     });
@@ -162,5 +165,9 @@ export class AnswersService {
     });
 
     return this.answerRepository.save(reply);
+  }
+
+  async getTotalLikes(): Promise<number> {
+    return this.answerLikeRepository.count(); // đếm tất cả record trong answer_likes
   }
 }

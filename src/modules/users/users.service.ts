@@ -10,6 +10,10 @@ export class UsersService {
     @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
 
+  async countUsers() {
+    return await this.userRepository.count();
+  }
+  
   async create(name: string, email: string, password: string) {
     const hashed = await bcrypt.hash(password, 10);
     const user = await this.userRepository.create({

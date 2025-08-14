@@ -70,4 +70,10 @@ export class AnswersController {
   ) {
     return this.answersService.reply(Number(id), dto, req);
   }
+
+  @Get('likes/total')
+  async totalLikes() {
+    const totalLikes = await this.answersService.getTotalLikes();
+    return { totalLikes };
+  }
 }
