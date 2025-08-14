@@ -121,17 +121,37 @@ export class AnswersService {
   async update(id: number, content: string, req: any) {
     const answer = await this.answerRepository.findOne({
       where: { id },
-      relations: ['user'],
+      relations: ['user', 'likes', 'replies'],
     });
-    if (!answer) {
-      throw new NotFoundException('Answer not found');
-    }
+    if (!answer) throw new NotFoundException('Answer not found');
     if (req.user.id !== answer.user.id) {
       throw new ForbiddenException('You are not allowed to update this answer');
     }
+
     answer.content = content;
-    await this.answerRepository.update(id, answer);
-    return this.answerRepository.findOneBy({ id });
+    const updated = await this.answerRepository.save(answer);
+
+    return {
+      id: updated.id,
+      content: updated.content,
+      user: { id: updated.user.id, name: updated.user.name },
+      created_at: updated.created_at,
+      updated_at: updated.updated_at,
+      like_count: updated.likes?.length || 0,
+      liked_by_current_user:
+        updated.likes?.some((like) => like.user.id === req.user.id) || false,
+      replies:
+        updated.replies?.map((r) => ({
+          id: r.id,
+          content: r.content,
+          user: { id: r.user.id, name: r.user.name },
+          created_at: r.created_at,
+          updated_at: r.updated_at,
+          like_count: r.likes?.length || 0,
+          liked_by_current_user:
+            r.likes?.some((like) => like.user.id === req.user.id) || false,
+        })) || [],
+    };
   }
 
   async remove(id: number, req: any) {
