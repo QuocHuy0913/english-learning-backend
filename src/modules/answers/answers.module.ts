@@ -14,7 +14,7 @@ import { AnswerLike } from 'src/entities/answer_like';
   providers: [AnswersService, QuestionsService],
   imports: [
     TypeOrmModule.forFeature([Answer, AnswerLike, Question, User]),
-    QuestionsModule, // import module để lấy QuestionsService
+    QuestionsModule,
   ],
 })
 export class AnswersModule {}
