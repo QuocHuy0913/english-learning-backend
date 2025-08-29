@@ -22,26 +22,17 @@ export class NotificationsService {
     userId: number,
     filter: 'all' | 'unread' | 'personal' | 'global',
   ) {
-    const where: any = [];
+    let where: any;
 
-    // all: global hoặc personal của user
     if (filter === 'all') {
-      where.push({ isGlobal: true }, { isGlobal: false, user: { id: userId } });
-    }
-
-    // unread: chỉ personal chưa đọc
-    if (filter === 'unread') {
-      where.push({ isGlobal: false, read: false, user: { id: userId } });
-    }
-
-    // personal: tất cả personal
-    if (filter === 'personal') {
-      where.push({ isGlobal: false, user: { id: userId } });
-    }
-
-    // global: chỉ global
-    if (filter === 'global') {
-      where.push({ isGlobal: true });
+      // dùng OR thay vì push array
+      where = [{ isGlobal: true }, { isGlobal: false, user: { id: userId } }];
+    } else if (filter === 'unread') {
+      where = { isGlobal: false, read: false, user: { id: userId } };
+    } else if (filter === 'personal') {
+      where = { isGlobal: false, user: { id: userId } };
+    } else if (filter === 'global') {
+      where = { isGlobal: true };
     }
 
     const [items, total] = await this.notificationRepository.findAndCount({
