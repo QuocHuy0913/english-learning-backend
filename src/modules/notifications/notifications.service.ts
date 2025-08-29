@@ -120,6 +120,7 @@ export class NotificationsService {
       content,
       isGlobal,
       user,
+      read: isGlobal ? true : false,
     });
 
     return this.notificationRepository.save(notification);
