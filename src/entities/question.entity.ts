@@ -2,6 +2,8 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -9,6 +11,7 @@ import {
 } from 'typeorm';
 import { Answer } from './answer.entity';
 import { User } from './user.entity';
+import { Tag } from './tag.entity';
 
 @Entity('questions')
 export class Question {
@@ -21,8 +24,15 @@ export class Question {
   @Column('text')
   content: string;
 
-  @Column('simple-array', { nullable: true })
-  tags: string[];
+  @ManyToMany(() => Tag, (tag) => tag.questions, {
+    eager: true,
+  })
+  @JoinTable({
+    name: 'question_tags', // bảng trung gian
+    joinColumn: { name: 'question_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'tag_id', referencedColumnName: 'id' },
+  })
+  tags: Tag[];
 
   @ManyToOne(() => User, (user) => user.questions, { eager: true })
   user: User;

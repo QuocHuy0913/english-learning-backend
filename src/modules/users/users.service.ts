@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
@@ -10,10 +10,28 @@ export class UsersService {
     @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
 
+  async listUsers(page = 1, limit = 10, status?: string) {
+    const whereCondition = status
+      ? { status: status as 'active' | 'banned' }
+      : {};
+    const [items, total] = await this.userRepository.findAndCount({
+      where: whereCondition,
+      skip: (page - 1) * limit,
+      take: limit,
+      order: { created_at: 'DESC' },
+    });
+    return { items, total };
+  }
+
+  async updateUserStatus(id: number, status: 'active' | 'banned') {
+    await this.userRepository.update(id, { status });
+    return this.userRepository.findOne({ where: { id } });
+  }
+
   async countUsers() {
     return await this.userRepository.count();
   }
-  
+
   async create(name: string, email: string, password: string) {
     const hashed = await bcrypt.hash(password, 10);
     const user = await this.userRepository.create({
@@ -26,11 +44,23 @@ export class UsersService {
   }
 
   async findByEmail(email: string) {
-    return await this.userRepository.findOneBy({ email });
+    return this.userRepository.findOneBy({ email });
+  }
+
+  async getByEmail(email: string) {
+    const user = await this.findByEmail(email);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user;
   }
 
   async findById(id: number) {
-    return await this.userRepository.findOneBy({ id });
+    const user = await this.userRepository.findOneBy({ id });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user;
   }
 
   async setRefreshToken(id: number, refreshToken: string) {

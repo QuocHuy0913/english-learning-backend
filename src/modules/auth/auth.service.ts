@@ -15,7 +15,7 @@ export class AuthService {
   ) {}
 
   private async getTokens(userId: number, email: string) {
-    const payload = { sub: userId, email };
+    const payload = { sub: userId, email: email };
     const accessToken = this.jwtService.sign(payload, {
       secret: process.env.JWT_SECRET,
       expiresIn: process.env.JWT_ACCESS_EXPIRES,
@@ -33,10 +33,13 @@ export class AuthService {
       throw new BadRequestException('User already exists');
     }
     const user = await this.usersService.create(name, email, password);
-    const tokens = await this.getTokens(user.id, user.email);
-    await this.usersService.setRefreshToken(user.id, tokens.refreshToken);
+    const tokens = await this.getTokens(Number(user.id), user.email);
+    await this.usersService.setRefreshToken(
+      Number(user.id),
+      tokens.refreshToken,
+    );
     return {
-      user: { id: user.id, name: user.name, email: user.email },
+      user: { id: user.id, name: user.name, email: user.email, role: user.role, status: user.status },
       ...tokens,
     };
   }
@@ -61,7 +64,7 @@ export class AuthService {
     const tokens = await this.getTokens(user.id, user.email);
     await this.usersService.setRefreshToken(user.id, tokens.refreshToken);
     return {
-      user: { id: user.id, name: user.name, email: user.email },
+      user: { id: user.id, name: user.name, email: user.email, role: user.role, status: user.status },
       ...tokens,
     };
   }

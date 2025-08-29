@@ -20,6 +20,19 @@ export class AnswersService {
     private readonly questionsService: QuestionsService,
   ) {}
 
+  async countAll(): Promise<number> {
+    return this.answerRepository.count();
+  }
+
+  async deleteAnswer(id: number) {
+    const answer = await this.answerRepository.findOneBy({ id });
+    if (!answer) {
+      throw new NotFoundException('Answer not found');
+    }
+    await this.answerRepository.delete(id);
+    return answer;
+  }
+
   async create(questionId: number, dto: CreateAnswerDto, req: any) {
     const question = await this.questionsService.findById(questionId);
     if (!question) {
@@ -38,7 +51,7 @@ export class AnswersService {
       where: {
         question: { id: questionId },
         parent: require('typeorm').IsNull(),
-      }, // chỉ lấy answer cha
+      },
       relations: ['user', 'likes', 'replies', 'replies.user', 'replies.likes'],
       order: { created_at: 'ASC' },
     });
@@ -66,6 +79,49 @@ export class AnswersService {
     });
 
     return answers.map(mapAnswer);
+  }
+
+  async findAllWithQuestion(userId: number, page = 1, limit = 10) {
+    const [answers, total] = await this.answerRepository.findAndCount({
+      relations: [
+        'user',
+        'likes',
+        'question',
+        'replies',
+        'replies.user',
+        'replies.likes',
+      ],
+      order: { created_at: 'DESC' },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    const items = answers.map((a) => ({
+      id: a.id,
+      content: a.content,
+      user: { id: a.user.id, name: a.user.name },
+      created_at: a.created_at,
+      updated_at: a.updated_at,
+      like_count: a.likes.length,
+      liked_by_current_user: a.likes.some((like) => like.user.id === userId),
+      question: a.question
+        ? { id: a.question.id, title: a.question.title }
+        : null,
+      replies:
+        a.replies?.map((r) => ({
+          id: r.id,
+          content: r.content,
+          user: { id: r.user.id, name: r.user.name },
+          created_at: r.created_at,
+          updated_at: r.updated_at,
+          like_count: r.likes.length,
+          liked_by_current_user: r.likes.some(
+            (like) => like.user.id === userId,
+          ),
+        })) || [],
+    }));
+
+    return { items, total };
   }
 
   async like(answerId: number, userId: number) {

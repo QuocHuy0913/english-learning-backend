@@ -8,6 +8,10 @@ import { AuthModule } from './modules/auth/auth.module';
 import { QuestionsModule } from './modules/questions/questions.module';
 import { AnswersModule } from './modules/answers/answers.module';
 import { AiModule } from './modules/ai/ai.module';
+import { AdminModule } from './modules/admin/admin.module';
+import { ReportsModule } from './modules/reports/reports.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
+import { TagsModule } from './modules/tags/tags.module';
 
 @Module({
   imports: [
@@ -28,6 +32,10 @@ import { AiModule } from './modules/ai/ai.module';
     QuestionsModule,
     AnswersModule,
     AiModule,
+    AdminModule,
+    ReportsModule,
+    NotificationsModule,
+    TagsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

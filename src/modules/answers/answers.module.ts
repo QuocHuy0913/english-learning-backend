@@ -8,13 +8,15 @@ import { User } from 'src/entities/user.entity';
 import { QuestionsModule } from '../questions/questions.module';
 import { QuestionsService } from '../questions/questions.service';
 import { AnswerLike } from 'src/entities/answer_like';
+import { Tag } from 'src/entities/tag.entity';
 
 @Module({
   controllers: [AnswersController],
   providers: [AnswersService, QuestionsService],
   imports: [
-    TypeOrmModule.forFeature([Answer, AnswerLike, Question, User]),
+    TypeOrmModule.forFeature([Answer, AnswerLike, Question, User, Tag]),
     QuestionsModule,
   ],
+  exports: [AnswersService],
 })
 export class AnswersModule {}

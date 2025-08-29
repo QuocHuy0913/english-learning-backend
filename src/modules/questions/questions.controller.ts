@@ -23,11 +23,12 @@ export class QuestionsController {
   async list(
     @Query('page') page = '1',
     @Query('limit') limit = '10',
-    @Query('search') search?: string,
+    @Query('keyword') keyword?: string,
+    @Query('tag') tag?: string,
   ) {
     const pageNumber = Math.max(Number(page), 1);
     const limitNumber = Math.min(Math.max(Number(limit), 1), 100);
-    return this.questionsService.findAll(pageNumber, limitNumber, search);
+    return this.questionsService.findAll(pageNumber, limitNumber, keyword, tag);
   }
 
   @UseGuards(JwtAuthGuard)

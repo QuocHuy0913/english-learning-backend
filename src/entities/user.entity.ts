@@ -29,6 +29,12 @@ export class User {
   @Column({ nullable: true })
   refreshToken?: string; // hashed refresh token
 
+  @Column({ type: 'enum', enum: ['user', 'admin'], default: 'user' })
+  role: 'user' | 'admin';
+
+  @Column({ type: 'enum', enum: ['active', 'banned'], default: 'active' })
+  status: 'active' | 'banned';
+
   @OneToMany(() => Question, (q) => q.user)
   questions: Question[];
 
