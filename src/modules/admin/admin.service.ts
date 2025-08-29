@@ -136,7 +136,9 @@ export class AdminService {
   }
 
   async deleteQuestion(id: number) {
-    return this.questionsService.deleteQuestionAdmin(id);
+    // ép kiểu cho chắc chắn
+    const questionId = Number(id);
+    return this.questionsService.deleteQuestionAdmin(questionId);
   }
 
   async getQuestionById(id: number) {

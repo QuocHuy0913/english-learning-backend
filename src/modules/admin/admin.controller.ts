@@ -87,8 +87,9 @@ export class AdminController {
   }
 
   @Delete('questions/:id')
-  async deleteQuestion(@Param('id') id: number) {
-    return this.adminService.deleteQuestion(id);
+  async deleteQuestion(@Param('id') id: string) {
+    const questionId = Number(id);
+    return this.adminService.deleteQuestion(questionId);
   }
 
   @Get('questions/:id')
