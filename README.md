@@ -137,6 +137,21 @@ DB_PASSWORD=
 
 DB_NAME=english_learning
 
+DB_SSL=false
+
+ADMIN_EMAIL=admin@example.com
+
+ADMIN_PASSWORD=admin@123
+
+JWT_SECRET=your_random_secret_key
+
+JWT_ACCESS_EXPIRES=15m
+
+JWT_REFRESH_EXPIRES=7d
+
+AI_API_KEY=your_huggingface_api_key
+
+
 ## Nếu chạy local public trên neon.tech
 
 DB_DRIVER=postgres
@@ -147,27 +162,29 @@ DB_PORT=5432
 
 DB_USER=<YOUR_NEON_USER>          # ví dụ: neondb_owner
 
-DB_PASSWORD=<YOUR_NEON_PASSWORD>  # mật khẩu database
+DB_PASSWORD=<YOUR_NEON_PASSWORD>  # ví dụ: npg_xxxxxx
 
 DB_NAME=<YOUR_NEON_DB_NAME>       # ví dụ: neondb
 
 DB_SSL=true
+
+ADMIN_EMAIL=admin@example.com
+
+ADMIN_PASSWORD=admin@123
+
+JWT_SECRET=your_random_secret_key
+
+JWT_ACCESS_EXPIRES=15m
+
+JWT_REFRESH_EXPIRES=7d
+
+AI_API_KEY=your_huggingface_api_key
 
 Lưu ý:
 - DB_PORT của Neon mặc định là 5432
 - Nếu Neon yêu cầu SSL, thêm:
     + ssl: { rejectUnauthorized: false } vào cấu hình TypeOrmModule.forRoot()
 - Bạn có thể bật/tắt SSL tùy môi trường bằng biến DB_SSL.
-
-Bổ sung về các biến cho Authentication:
-
-JWT_SECRET=
-
-JWT_ACCESS_EXPIRES=15
-
-JWT_REFRESH_EXPIRES=7d
-
-AI_API_KEY=your_huggingface_api_key
 
 💡 Tạo JWT_SECRET ngẫu nhiên:
 
