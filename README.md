@@ -113,7 +113,9 @@ src/
 ⚙️ Cài đặt
 
 1️⃣ Clone project
+
 git clone https://github.com/QuocHuy0913/english-learning-backend.git
+
 cd english-learning-backend
 
 2️⃣ Cài dependencies
@@ -124,20 +126,31 @@ npm install
 ## Nếu chạy Localhost trên XAMPP
 
 DB_DRIVER=mysql
+
 DB_HOST=localhost
+
 DB_PORT=3306
+
 DB_USER=root
+
 DB_PASSWORD=
+
 DB_NAME=english_learning
 
 ## Nếu chạy local public trên neon.tech
 
 DB_DRIVER=postgres
+
 DB_HOST=<YOUR_NEON_HOST>          # ví dụ: ep-xxxxxx-pooler.ap-southeast-1.aws.neon.tech
+
 DB_PORT=5432
+
 DB_USER=<YOUR_NEON_USER>          # ví dụ: neondb_owner
+
 DB_PASSWORD=<YOUR_NEON_PASSWORD>  # mật khẩu database
+
 DB_NAME=<YOUR_NEON_DB_NAME>       # ví dụ: neondb
+
 DB_SSL=true
 
 Lưu ý:
@@ -146,30 +159,40 @@ Lưu ý:
     + ssl: { rejectUnauthorized: false } vào cấu hình TypeOrmModule.forRoot()
 - Bạn có thể bật/tắt SSL tùy môi trường bằng biến DB_SSL.
 
-Bổ sung về các biến cho Authentication
+Bổ sung về các biến cho Authentication:
+
 JWT_SECRET=
-JWT_ACCESS_EXPIRES=15m
+
+JWT_ACCESS_EXPIRES=15
+
 JWT_REFRESH_EXPIRES=7d
 
 AI_API_KEY=your_huggingface_api_key
 
 💡 Tạo JWT_SECRET ngẫu nhiên:
+
 Bạn có thể dùng Node.js:
+
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 
 Hoặc dùng OpenSSL:
+
 openssl rand -hex 32
 
 ---
 
 🛠 Chạy Local
+
 1️⃣ Khởi động MySQL
+
 Nếu dùng XAMPP → Start Apache & MySQL.
 
 Tạo database:
+
 CREATE DATABASE english_community;
 
 2️⃣ Chạy server
+
 npm run start:dev
 
 ---
