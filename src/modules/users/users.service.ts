@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -10,16 +10,28 @@ export class UsersService {
     @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
 
-  async listUsers(page = 1, limit = 10, status?: string) {
-    const whereCondition = status
-      ? { status: status as 'active' | 'banned' }
-      : {};
+  async listUsers(page = 1, limit = 10, status?: string, search?: string) {
+    const whereCondition: any = {};
+
+    if (status) {
+      whereCondition.status = status as 'active' | 'banned';
+    }
+
+    if (search) {
+      // Tìm theo name hoặc email
+      whereCondition.OR = [
+        { name: ILike(`%${search}%`) },
+        { email: ILike(`%${search}%`) },
+      ];
+    }
+
     const [items, total] = await this.userRepository.findAndCount({
       where: whereCondition,
       skip: (page - 1) * limit,
       take: limit,
       order: { created_at: 'DESC' },
     });
+
     return { items, total };
   }
 

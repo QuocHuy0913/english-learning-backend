@@ -41,8 +41,14 @@ export class AdminController {
     @Query('page') page = 1,
     @Query('limit') limit = 10,
     @Query('status') status?: string,
+    @Query('search') search?: string,
   ) {
-    return this.adminService.listUsers(Number(page), Number(limit), status);
+    return this.adminService.listUsers(
+      Number(page),
+      Number(limit),
+      status,
+      search,
+    );
   }
 
   @Patch('users/:id')

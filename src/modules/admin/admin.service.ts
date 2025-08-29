@@ -106,8 +106,8 @@ export class AdminService {
   }
 
   //1.User management
-  async listUsers(page = 1, limit = 10, status?: string) {
-    return this.usersService.listUsers(page, limit, status);
+  async listUsers(page = 1, limit = 10, status?: string, search?: string) {
+    return this.usersService.listUsers(page, limit, status, search);
   }
 
   async updateUserStatus(id: number, status: 'active' | 'banned') {
