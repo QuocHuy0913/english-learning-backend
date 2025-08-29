@@ -9,9 +9,9 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Answer } from './answer.entity';
 import { User } from './user.entity';
 import { Tag } from './tag.entity';
+import { Answer } from './answer.entity';
 
 @Entity('questions')
 export class Question {
@@ -24,11 +24,9 @@ export class Question {
   @Column('text')
   content: string;
 
-  @ManyToMany(() => Tag, (tag) => tag.questions, {
-    eager: true,
-  })
+  @ManyToMany(() => Tag, (tag) => tag.questions, { eager: true })
   @JoinTable({
-    name: 'question_tags', // bảng trung gian
+    name: 'question_tags',
     joinColumn: { name: 'question_id', referencedColumnName: 'id' },
     inverseJoinColumn: { name: 'tag_id', referencedColumnName: 'id' },
   })
@@ -40,9 +38,22 @@ export class Question {
   @OneToMany(() => Answer, (a) => a.question)
   answers: Answer[];
 
+  // 👇 Thêm quan hệ like
+  @ManyToMany(() => User, { eager: true })
+  @JoinTable({
+    name: 'question_likes',
+    joinColumn: { name: 'question_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'user_id', referencedColumnName: 'id' },
+  })
+  likedBy: User[];
+
+  get likesCount(): number {
+    return this.likedBy ? this.likedBy.length : 0;
+  }
+
   @CreateDateColumn({
     type: 'timestamp',
-    precision: 0, // bỏ microseconds
+    precision: 0,
     default: () => 'CURRENT_TIMESTAMP',
   })
   created_at: Date;

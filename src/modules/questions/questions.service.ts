@@ -9,6 +9,7 @@ import { Question } from 'src/entities/question.entity';
 import { Like, Repository } from 'typeorm';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { Tag } from 'src/entities/tag.entity';
+import { User } from 'src/entities/user.entity';
 
 @Injectable()
 export class QuestionsService {
@@ -62,7 +63,8 @@ export class QuestionsService {
     page = 1,
     limit = 10,
     keyword?: string,
-    tagSearch?: string, // comma-separated tags
+    tagSearch?: string,
+    req?: any,
   ) {
     const where: any[] = [];
 
@@ -71,17 +73,15 @@ export class QuestionsService {
       where.push({ content: Like(`%${keyword}%`) });
     }
 
-    // Lấy kèm user và tags
     const [items, total] = await this.questionRepository.findAndCount({
       where: where.length > 0 ? where : undefined,
-      relations: ['tags', 'user'],
+      relations: ['tags', 'user', 'likedBy'],
       skip: (page - 1) * limit,
       take: limit,
       order: { created_at: 'DESC' },
     });
 
     let filtered = items;
-
     if (tagSearch) {
       const tags = tagSearch.split(',').map((t) => t.trim().toLowerCase());
       filtered = filtered.filter((q) =>
@@ -89,25 +89,53 @@ export class QuestionsService {
       );
     }
 
-    return { items: filtered, total };
+    return {
+      items: filtered.map((q) => ({
+        ...q,
+        likesCount: q.likedBy.length,
+        liked: req?.user ? q.likedBy.some((u) => u.id === req.user.id) : false,
+      })),
+      total,
+    };
   }
 
-  async findByUser(userId: number, page = 1, limit = 10) {
+  async findByUser(userId: number, page = 1, limit = 10, req?: any) {
     const [items, total] = await this.questionRepository.findAndCount({
       where: { user: { id: userId } },
+      relations: ['tags', 'user', 'likedBy'],
       skip: (page - 1) * limit,
       take: limit,
       order: { created_at: 'DESC' },
     });
-    return { items, total };
+
+    return {
+      items: items.map((q) => ({
+        ...q,
+        likesCount: q.likedBy.length,
+        liked: req?.user ? q.likedBy.some((u) => u.id === req.user.id) : false,
+      })),
+      total,
+    };
   }
 
-  async findById(id: number) {
-    const question = await this.questionRepository.findOneBy({ id });
+  async findById(id: number, req?: any) {
+    const question = await this.questionRepository.findOne({
+      where: { id },
+      relations: ['tags', 'user', 'likedBy'],
+    });
     if (!question) {
-      throw new UnauthorizedException('Question not found');
+      throw new NotFoundException('Question not found');
     }
-    return question;
+
+    const liked = req?.user
+      ? question.likedBy.some((u) => u.id === req.user.id)
+      : false;
+
+    return {
+      ...question,
+      likesCount: question.likedBy.length,
+      liked,
+    };
   }
 
   async update(id: number, dto: Partial<CreateQuestionDto>, req: any) {
@@ -176,5 +204,25 @@ export class QuestionsService {
       );
     }
     return this.questionRepository.delete(id);
+  }
+
+  async likeQuestion(questionId: number, userId: number) {
+    const question = await this.questionRepository.findOne({
+      where: { id: questionId },
+      relations: ['likedBy'],
+    });
+    if (!question) throw new NotFoundException('Question not found');
+
+    const alreadyLiked = question.likedBy.some((u) => u.id === userId);
+    if (alreadyLiked) {
+      // Unlike
+      question.likedBy = question.likedBy.filter((u) => u.id !== userId);
+    } else {
+      // Like
+      question.likedBy.push({ id: userId } as User);
+    }
+
+    await this.questionRepository.save(question);
+    return { likesCount: question.likedBy.length, liked: !alreadyLiked };
   }
 }
