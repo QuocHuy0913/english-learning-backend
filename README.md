@@ -121,7 +121,7 @@ cd english-learning-backend
 2️⃣ Cài dependencies
 npm install
 
-3️⃣ Tạo file .env
+3️⃣ Tạo file .env:
 
 ## Nếu chạy Localhost trên XAMPP
 
@@ -198,8 +198,6 @@ npm run start:dev
 ---
 
 ## 🔑 API chính
-
----
 
 ## 🧑‍💻 Client APIs
 
