@@ -153,12 +153,4 @@ export class NotificationsService {
     noti.read = true;
     return this.notificationRepository.save(noti); // ✅ lưu DB
   }
-
-  async markAllNotificationsRead(userId: number) {
-    await this.notificationRepository.update(
-      { user: { id: userId }, read: false },
-      { read: true },
-    );
-    return { success: true };
-  }
 }
