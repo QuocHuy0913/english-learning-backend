@@ -22,8 +22,8 @@ export class TagsService {
       .addSelect('COUNT(question.id)', 'usageCount')
       .addSelect('MAX(tag.created_at)', 'createdAt')
       .groupBy('tag.id')
-      .orderBy('usageCount', 'DESC')
-      .addOrderBy('createdAt', 'DESC')
+      .orderBy('"usageCount"', 'DESC')
+      .addOrderBy('"createdAt"', 'DESC')
       .limit(limit)
       .getRawMany();
 
