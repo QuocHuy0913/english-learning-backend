@@ -92,17 +92,13 @@ src/
 │   │   ├── questions.module.ts
 │   │   └── questions.service.ts
 │   │
-│   ├── users/                # API người dùng
-│   │   ├── dto/
-│   │   │   └── create-user.dto.ts
-│   │   ├── users.controller.ts
-│   │   ├── users.module.ts
-│   │   └── users.service.ts
-│   │
-│   └── ai/
-        ├── ai.controller.ts      # Controller xử lý endpoint /questions/ai-suggest
-        ├── ai.module.ts         
-        └── ai.service.ts         # Service gọi Hugging Face API
+│   └── users/                # API người dùng
+│       ├── dto/
+│       │   └── create-user.dto.ts
+│       ├── users.controller.ts
+│       ├── users.module.ts
+│       └── users.service.ts
+│   
 │
 ├── passports/
 │   └── jwt.strategy.ts        # Cấu hình chiến lược JWT
@@ -112,7 +108,7 @@ src/
 ├── app.service.ts
 └── main.ts                    # Entry point
 
---------------------------------------------------------------------------------------------------------
+---
 
 ⚙️ Cài đặt
 1️⃣ Clone project
@@ -163,7 +159,7 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 Hoặc dùng OpenSSL:
 openssl rand -hex 32
 
---------------------------------------------------------------------------------------------------------
+---
 
 🛠 Chạy Local
 1️⃣ Khởi động MySQL
@@ -175,13 +171,15 @@ CREATE DATABASE english_community;
 2️⃣ Chạy server
 npm run start:dev
 
-----------------------------------------------------------------------------------------------------------
+---
 
 ## 🔑 API chính
 
------- Client --------
+---
 
-### **Auth**
+## 🧑‍💻 Client APIs
+
+### 🔐 Auth
 | Method | Endpoint         | Mô tả                                      |
 | ------ | ---------------- | ------------------------------------------ |
 | POST   | `/auth/register` | Đăng ký tài khoản                          |
@@ -189,26 +187,23 @@ npm run start:dev
 | POST   | `/auth/refresh`  | Làm mới access token từ refresh token      |
 | GET    | `/auth/profile`  | Lấy thông tin profile người dùng (cần JWT) |
 
-
 ---
 
-### **Users**
+### 👥 Users
 | Method | Endpoint       | Mô tả                  |
 | ------ | -------------- | ---------------------- |
 | GET    | `/users/count` | Đếm tổng số người dùng |
 
-
 ---
 
-### **Tags**
+### 🏷️ Tags
 | Method | Endpoint        | Mô tả                                                          |
 | ------ | --------------- | -------------------------------------------------------------- |
 | GET    | `/tags/popular` | Lấy danh sách tag phổ biến (mặc định 6, có thể truyền `limit`) |
 
-
 ---
 
-### **Questions**
+### ❓ Questions
 | Method | Endpoint         | Mô tả                                                                |
 | ------ | ---------------- | -------------------------------------------------------------------- |
 | GET    | `/questions`     | Lấy danh sách câu hỏi (có phân trang, tìm theo `keyword` hoặc `tag`) |
@@ -218,10 +213,9 @@ npm run start:dev
 | PATCH  | `/questions/:id` | Cập nhật câu hỏi (cần JWT, chỉ owner mới được sửa)                   |
 | DELETE | `/questions/:id` | Xóa câu hỏi (cần JWT, chỉ owner mới được xóa)                        |
 
-
 ---
 
-### **Answers**
+### 💬 Answers
 | Method | Endpoint                         | Mô tả                                    |
 | ------ | -------------------------------- | ---------------------------------------- |
 | POST   | `/answers/questions/:questionId` | Tạo câu trả lời cho câu hỏi              |
@@ -233,30 +227,27 @@ npm run start:dev
 | POST   | `/answers/:id/replies`           | Trả lời (reply) vào một câu trả lời khác |
 | GET    | `/answers/likes/total`           | Tổng số lượt like trên toàn hệ thống     |
 
-
 ---
 
-### **Reports**
+### 🚨 Reports
 | Method | Endpoint          | Mô tả                                                                 |
 | ------ | ----------------- | --------------------------------------------------------------------- |
 | POST   | `/reports/create` | Gửi báo cáo (report) về câu hỏi, câu trả lời hoặc bình luận (cần JWT) |
 
-
 ---
 
-### **Notifications**
+### 🔔 Notifications
 | Method | Endpoint                  | Mô tả                                                                 |
 | ------ | ------------------------- | --------------------------------------------------------------------- |
 | GET    | `/notifications`          | Lấy danh sách thông báo của user (filter: all/unread/personal/global) |
 | GET    | `/notifications/:id`      | Xem chi tiết một thông báo (đồng thời đánh dấu đã đọc)                |
 | PATCH  | `/notifications/:id/read` | Đánh dấu thông báo là đã đọc                                          |
 
+---
 
+## 🛠️ Admin APIs
 
------- Admin --------
-
-👤 User Management
-
+### 👤 User Management
 | Method | Endpoint             | Mô tả                                  |
 | ------ | -------------------- | -------------------------------------- |
 | GET    | `/admin/users`       | Danh sách người dùng (phân trang, lọc) |
@@ -265,8 +256,9 @@ npm run start:dev
 | PATCH  | `/admin/users/:id`   | Cập nhật trạng thái (active/banned)    |
 | GET    | `/admin/users/count` | Đếm tổng số người dùng                 |
 
+---
 
-❓ Question Management
+### ❓ Question Management
 | Method | Endpoint                 | Mô tả                                    |
 | ------ | ------------------------ | ---------------------------------------- |
 | GET    | `/admin/questions`       | Danh sách câu hỏi (phân trang, tìm kiếm) |
@@ -274,9 +266,9 @@ npm run start:dev
 | DELETE | `/admin/questions/:id`   | Xóa câu hỏi                              |
 | GET    | `/admin/questions/count` | Đếm tổng số câu hỏi                      |
 
----------
+---
 
-💬 Answer Management
+### 💬 Answer Management
 | Method | Endpoint                     | Mô tả                               |
 | ------ | ---------------------------- | ----------------------------------- |
 | GET    | `/admin/answers/all`         | Lấy tất cả câu trả lời (phân trang) |
@@ -285,17 +277,17 @@ npm run start:dev
 | DELETE | `/admin/answers/:id`         | Xóa câu trả lời                     |
 | GET    | `/admin/answers/likes/total` | Tổng số lượt like cho tất cả answer |
 
-----------
+---
 
-🏷️ Tag Management
+### 🏷️ Tag Management
 | Method | Endpoint          | Mô tả         |
 | ------ | ----------------- | ------------- |
 | GET    | `/admin/tags`     | Danh sách tag |
 | DELETE | `/admin/tags/:id` | Xóa tag       |
 
-----------
+---
 
-🚨 Report Management
+### 🚨 Report Management
 | Method | Endpoint               | Mô tả                                          |
 | ------ | ---------------------- | ---------------------------------------------- |
 | GET    | `/admin/reports`       | Danh sách báo cáo (lọc status, type, search)   |
@@ -303,9 +295,9 @@ npm run start:dev
 | PATCH  | `/admin/reports/:id`   | Cập nhật trạng thái báo cáo (pending/reviewed) |
 | GET    | `/admin/reports/count` | Đếm tổng số báo cáo                            |
 
------------
+---
 
-🔔 Notification Management
+### 🔔 Notification Management
 | Method | Endpoint                     | Mô tả                                 |
 | ------ | ---------------------------- | ------------------------------------- |
 | GET    | `/admin/notifications`       | Danh sách thông báo (lọc theo userId) |
@@ -314,16 +306,16 @@ npm run start:dev
 | PATCH  | `/admin/notifications/:id`   | Cập nhật thông báo                    |
 | DELETE | `/admin/notifications/:id`   | Xóa thông báo                         |
 
------------
+---
 
-📊 Statistics
+### 📊 Statistics
 | Method | Endpoint        | Mô tả                  |
 | ------ | --------------- | ---------------------- |
 | GET    | `/admin/growth` | Tăng trưởng hàng tháng |
 
-------------
+---
 
--------- AI ----------
+## 🤖 AI APIs
 | Method | Endpoint      | Mô tả                                 |
 | ------ | ------------- | ------------------------------------- |
 | POST   | `/ai/suggest` | Gợi ý nội dung câu hỏi từ AI (prompt) |
