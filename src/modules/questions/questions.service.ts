@@ -111,7 +111,15 @@ export class QuestionsService {
   }
 
   async update(id: number, dto: Partial<CreateQuestionDto>, req: any) {
-    const question = await this.findById(id);
+    const question = await this.questionRepository.findOne({
+      where: { id },
+      relations: ['user', 'tags'],
+    });
+
+    if (!question) {
+      throw new NotFoundException('Question not found');
+    }
+
     if (req.user.id !== question.user.id) {
       throw new ForbiddenException(
         'You are not allowed to update this question',
@@ -126,6 +134,7 @@ export class QuestionsService {
       question.content = dto.content.trim();
     }
 
+    // Cập nhật tags nếu có
     if (dto.tags !== undefined) {
       const tags: Tag[] = [];
       let tagNames: string[] = [];
@@ -154,8 +163,9 @@ export class QuestionsService {
     }
 
     question.updated_at = new Date();
-    await this.questionRepository.update(id, question);
-    return this.findById(id);
+
+    await this.questionRepository.save(question); // dùng save thay vì update
+    return question;
   }
 
   async remove(id: number, req: any) {
