@@ -1,5 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Answer } from 'src/entities/answer.entity';
+import { Question } from 'src/entities/question.entity';
 import { Report } from 'src/entities/report.entity';
 import { User } from 'src/entities/user.entity';
 import { FindOptionsWhere, In, Like, Repository } from 'typeorm';
@@ -9,6 +11,12 @@ export class ReportsService {
   constructor(
     @InjectRepository(Report)
     private readonly reportRepository: Repository<Report>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+    @InjectRepository(Question)
+    private readonly questionRepository: Repository<Question>,
+    @InjectRepository(Answer)
+    private readonly answerRepository: Repository<Answer>,
   ) {}
 
   async countReports(): Promise<number> {
@@ -53,6 +61,22 @@ export class ReportsService {
       take: limitNumber,
       order: { created_at: 'DESC' },
     });
+
+    const enriched = await Promise.all(
+      items.map(async (report) => {
+        let target: any = null;
+        if (report.targetType === 'question') {
+          target = await this.questionRepository.findOne({
+            where: { id: report.targetId },
+          });
+        } else if (report.targetType === 'answer') {
+          target = await this.answerRepository.findOne({
+            where: { id: report.targetId },
+          });
+        }
+        return { ...report, target };
+      }),
+    );
 
     return { items, total };
   }
