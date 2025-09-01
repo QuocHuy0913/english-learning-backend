@@ -1,4 +1,3 @@
-// src/reports/dto/report.dto.ts
 import { User } from 'src/entities/user.entity';
 import { Report } from 'src/entities/report.entity';
 
@@ -22,13 +21,12 @@ export class ReportDto {
     email: string;
   } | null;
 
-  // 👇 thêm tiêu đề / nội dung rút gọn
-  targetTitle?: string | null;
+  targetTitle: string | null; // 👈 thêm field này
 
   static fromEntity(
     report: Report,
     targetUser: User | null,
-    targetTitle?: string | null,
+    targetTitle: string | null,
   ): ReportDto {
     return {
       id: report.id,
@@ -49,7 +47,7 @@ export class ReportDto {
             email: targetUser.email,
           }
         : null,
-      targetTitle: targetTitle ?? null,
+      targetTitle,
     };
   }
 }
