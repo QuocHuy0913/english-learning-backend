@@ -5,14 +5,13 @@ import { Question } from 'src/entities/question.entity';
 import { Report } from 'src/entities/report.entity';
 import { User } from 'src/entities/user.entity';
 import { FindOptionsWhere, In, Like, Repository } from 'typeorm';
+import { ReportDto } from '../admin/dto/report.dto';
 
 @Injectable()
 export class ReportsService {
   constructor(
     @InjectRepository(Report)
     private readonly reportRepository: Repository<Report>,
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
     @InjectRepository(Question)
     private readonly questionRepository: Repository<Question>,
     @InjectRepository(Answer)
@@ -46,39 +45,55 @@ export class ReportsService {
     status?: 'pending' | 'reviewed',
     targetType?: 'question' | 'answer' | 'comment',
   ) {
-    const pageNumber = Math.max(page, 1);
-    const limitNumber = Math.min(Math.max(limit, 1), 100);
+    const where: any = {};
 
-    const where: FindOptionsWhere<Report> = {};
+    if (search) {
+      where.reason = Like(`%${search}%`);
+    }
 
-    if (search) where.reason = Like(`%${search}%`);
-    if (status) where.status = status;
-    if (targetType) where.targetType = targetType;
+    if (status) {
+      where.status = status;
+    }
+
+    if (targetType) {
+      where.targetType = targetType;
+    }
 
     const [items, total] = await this.reportRepository.findAndCount({
       where,
-      skip: (pageNumber - 1) * limitNumber,
-      take: limitNumber,
+      skip: (page - 1) * limit,
+      take: limit,
       order: { created_at: 'DESC' },
+      relations: ['reporter'],
     });
 
     const enriched = await Promise.all(
       items.map(async (report) => {
-        let target: any = null;
+        let targetUser: User | null = null;
+
         if (report.targetType === 'question') {
-          target = await this.questionRepository.findOne({
+          const q = await this.questionRepository.findOne({
             where: { id: report.targetId },
+            relations: ['user'],
+            select: { user: { id: true, name: true, email: true } },
           });
-        } else if (report.targetType === 'answer') {
-          target = await this.answerRepository.findOne({
-            where: { id: report.targetId },
-          });
+          targetUser = q?.user ?? null;
         }
-        return { ...report, target };
+
+        if (report.targetType === 'answer') {
+          const a = await this.answerRepository.findOne({
+            where: { id: report.targetId },
+            relations: ['user'],
+            select: { user: { id: true, name: true, email: true } },
+          });
+          targetUser = a?.user ?? null;
+        }
+
+        return ReportDto.fromEntity(report, targetUser);
       }),
     );
 
-    return { items, total };
+    return { items: enriched, total };
   }
 
   async reviewReport(id: number, status: 'reviewed') {
