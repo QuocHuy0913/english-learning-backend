@@ -22,9 +22,13 @@ export class ReportDto {
     email: string;
   } | null;
 
+  // 👇 thêm tiêu đề / nội dung rút gọn
+  targetTitle?: string | null;
+
   static fromEntity(
     report: Report,
     targetUser: User | null,
+    targetTitle?: string | null,
   ): ReportDto {
     return {
       id: report.id,
@@ -45,6 +49,7 @@ export class ReportDto {
             email: targetUser.email,
           }
         : null,
+      targetTitle: targetTitle ?? null,
     };
   }
 }

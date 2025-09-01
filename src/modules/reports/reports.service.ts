@@ -70,26 +70,31 @@ export class ReportsService {
     const enriched = await Promise.all(
       items.map(async (report) => {
         let targetUser: User | null = null;
+        let targetTitle: string | null = null; 
 
         if (report.targetType === 'question') {
           const q = await this.questionRepository.findOne({
             where: { id: report.targetId },
+            select: { id: true, title: true },
             relations: ['user'],
-            select: { user: { id: true, name: true, email: true } },
           });
           targetUser = q?.user ?? null;
+          targetTitle = q?.title ?? null;
         }
 
         if (report.targetType === 'answer') {
           const a = await this.answerRepository.findOne({
             where: { id: report.targetId },
+            select: { id: true, content: true },
             relations: ['user'],
-            select: { user: { id: true, name: true, email: true } },
           });
           targetUser = a?.user ?? null;
+          targetTitle = a
+            ? a.content.slice(0, 50) + (a.content.length > 50 ? '...' : '')
+            : null;
         }
 
-        return ReportDto.fromEntity(report, targetUser);
+        return ReportDto.fromEntity(report, targetUser, targetTitle);
       }),
     );
 
